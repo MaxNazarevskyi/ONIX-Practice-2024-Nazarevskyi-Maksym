@@ -24,7 +24,7 @@ class Game {
                 val guess = readln().toInt()
 
                 if (checkGuess(guess)) {
-                    println("Congratulations! Your answer is correct!")
+                    println("Congratulations! Your answer is correct! Number of attempts: ${currentPlayer.attempts}")
                     currentPlayer = nextPlayer.also { nextPlayer = currentPlayer }
                 } else {
                     println("Try again")
@@ -34,14 +34,21 @@ class Game {
                 println("Player ${currentPlayer.name()} guessed: $guess")
 
                 if (checkGuess(guess)) {
-                    println("Congratulations! ${currentPlayer.name()} guessed the number!")
+                    println("Congratulations! ${currentPlayer.name()} guessed the number! Number of attempts: ${currentPlayer.attempts}")
                     currentPlayer = nextPlayer.also { nextPlayer = currentPlayer }  // Switching
+                } else {
+                    println("Let me try again...")
                 }
             }
         }
     }
 
+    private fun switchPlayers() {
+        currentPlayer = nextPlayer.also { nextPlayer = currentPlayer }
+    }
+
     private fun checkGuess(guess: Int): Boolean {
+        currentPlayer.attempts++
         return when {
             guess < secretNumber -> {
                 println("Secret number is bigger")
@@ -60,10 +67,12 @@ interface Player {
     fun guessNumber(): Int
     fun name(): String?
     fun setName()
+    var attempts: Int
 }
 
 class HumanPlayer : Player {
     private var playerName: String? = null
+    override var attempts: Int = 0
 
     override fun guessNumber(): Int {
         return readLine()?.toIntOrNull() ?: -1
@@ -80,6 +89,8 @@ class HumanPlayer : Player {
 }
 
 class ComputerPlayer : Player {
+    override var attempts: Int = 0
+
     override fun guessNumber(): Int {
         return Random.nextInt(0, 101)
     }
